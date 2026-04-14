@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <title>📊 AI Financial Analyst</title>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ══ SIDEBAR ══════════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+
+            <!-- Brand -->
+            <div class="brand">
+                <div class="logo-icon">💰</div>
+                <span class="brand-name">FinanceAI</span>
+            </div>
+
+            <!-- Document section -->
+            <p class="sidebar-label">Document</p>
+
+            <!-- Hidden file input — ID unchanged -->
+            <input type="file" id="pdfFile" accept=".pdf" style="display:none;">
+
+            <!-- Drag zone — ID unchanged -->
+            <div id="dragArea" class="drag-area"
+                 onclick="document.getElementById('pdfFile').click()">
+                <span class="drag-plus">＋</span>
+                Drop PDF here<br>or click to upload
+            </div>
+
+            <!-- File name — ID unchanged -->
+            <div id="fileName" class="file-name">No file selected</div>
+
+            <!-- Train button — ID + onclick unchanged -->
+            <button onclick="uploadDoc()" id="processBtn" class="primary-btn">
+                🚀 Train AI
+            </button>
+
+            <!-- Status — ID unchanged -->
+            <div id="uploadStatus" class="status-msg"></div>
+
+            <!-- Progress — ID unchanged -->
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+
+            <!-- KB ready indicator -->
+            <div class="kb-status hidden" id="kbStatus">
+                <span class="dot"></span> Knowledge base ready
+            </div>
+
+            <hr class="sidebar-divider">
+
+            <p class="options-label">Options</p>
+
+            <!-- Theme — onclick unchanged -->
+            <button onclick="toggleTheme()" class="toggle-btn">
+                🌙 &nbsp;Toggle Theme
+            </button>
+
+        </div>
+    </aside>
+
+    <!-- Edge toggle — always visible -->
+    <button id="edgeBtn" onclick="toggleSidebar()">◀</button>
+
+    <!-- ══ MAIN CHAT ═════════════════════════════════════════ -->
+    <main class="chat-main">
+
+        <!-- Header -->
+        <header class="chat-header">
+            <div>
+                <h1>
+                    📊 AI Financial Analyst
+                    <span class="header-badge">RAG + LLM</span>
+                </h1>
+                <p class="doc-loaded" id="docLoaded">Upload a document to begin</p>
+            </div>
+            <div class="header-right">
+                <button class="new-chat-btn" onclick="newChat()">New chat</button>
+            </div>
+        </header>
+
+        <!-- Quick action chips -->
+        <div class="quick-actions-bar">
+            <button class="chip" onclick="quickQuery('Summarize the document in 10 lines')">Summarize</button>
+            <button class="chip" onclick="quickQuery('What are the key financial metrics?')">Key metrics</button>
+            <button class="chip" onclick="quickQuery('What is the fiscal deficit?')">Fiscal deficit</button>
+            <button class="chip" onclick="quickQuery('What are the total receipts and expenditure?')">Budget overview</button>
+        </div>
+
+        <!-- Chat messages — ID unchanged -->
+        <div id="chatBox" class="chat-messages">
+            <div class="message ai-message">
+                <div class="avatar ai-avatar">AI</div>
+                <div class="message-content">
+                    👋 Hello! I'm your AI Financial Analyst.<br>
+                    Upload a document and ask anything.
+                </div>
+            </div>
+        </div>
+
+        <!-- Input bar — all IDs + handlers unchanged -->
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input
+                    type="text"
+                    id="userQuery"
+                    placeholder="Ask about fiscal deficit, tax rates, allocations..."
+                    onkeypress="handleEnter(event)"
+                >
+                <button onclick="sendQuery()" id="sendBtn" class="send-btn">➤</button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="/static/javascript.js"></script>
+</body>
+</html>
