@@ -59,7 +59,7 @@ function newChat() {
     </div>`;
 }
 
-// UPLOAD
+// 🔥 FIXED UPLOAD FUNCTION
 async function uploadDoc() {
     const fileInput = document.getElementById('pdfFile');
     const statusMsg = document.getElementById('uploadStatus');
@@ -87,18 +87,26 @@ async function uploadDoc() {
         console.log("UPLOAD RESPONSE:", data);
 
         progress.style.width = '100%';
-        statusMsg.textContent = data.message || '✅ Ready';
 
-        kbStatus.classList.remove('hidden');
+        // 🔥 MAIN FIX
+        if (data.status === "Success") {
+            statusMsg.textContent = '✅ Upload successful!';
+            kbStatus.classList.remove('hidden');
 
-        if (docLoaded) {
-            docLoaded.textContent =
-                (fileInput.files[0]?.name || 'Document') + ' loaded';
+            if (docLoaded) {
+                docLoaded.textContent =
+                    (fileInput.files[0]?.name || 'Document') + ' loaded';
+            }
+
+        } else {
+            // 🔥 SHOW REAL ERROR FROM BACKEND
+            statusMsg.textContent = '❌ ' + data.message;
+            progress.style.width = '0%';
         }
 
     } catch (err) {
         console.error(err);
-        statusMsg.textContent = '❌ Upload failed';
+        statusMsg.textContent = '❌ Upload failed: ' + err.message;
         progress.style.width = '0%';
     }
 
@@ -106,7 +114,7 @@ async function uploadDoc() {
     setTimeout(() => { progress.style.width = '0%'; }, 2000);
 }
 
-// ASK (FIXED)
+// ASK
 async function sendQuery() {
     const input = document.getElementById('userQuery');
     const query = input.value.trim();
