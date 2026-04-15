@@ -14,6 +14,27 @@
 # pinecone-client
 # sentence-transformers
 
+# fastapi==0.135.3
+# uvicorn==0.44.0
+# python-multipart==0.0.26
+# python-dotenv==1.2.2
+# pypdf==6.10.1
+
+# langchain==0.2.14
+# langchain-community==0.2.12
+# langchain-core==0.2.43
+
+# langchain-groq==0.1.10
+# langchain-huggingface==0.0.3
+# langchain-pinecone==0.1.3
+
+# pinecone-client==5.0.1
+# sentence-transformers==5.4.1
+# torch==2.11.0+cpu
+
+# requests==2.33.1
+# faiss-cpu
+
 fastapi==0.135.3
 uvicorn==0.44.0
 python-multipart==0.0.26
@@ -26,11 +47,10 @@ langchain-core==0.2.43
 
 langchain-groq==0.1.10
 langchain-huggingface==0.0.3
-langchain-pinecone==0.1.3
 
-pinecone-client==5.0.1
-sentence-transformers==5.4.1
-torch==2.11.0+cpu
+sentence-transformers==2.7.0
+torch==2.2.2
+
+faiss-cpu==1.8.0
 
 requests==2.33.1
-faiss-cpu
