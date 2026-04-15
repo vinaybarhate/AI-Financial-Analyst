@@ -62,12 +62,17 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 def embed_and_store(chunks):
 
-    # ✅ Local embedding model (no API needed)
+    print(f"🔍 Embedding {len(chunks)} chunks...")
+
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
-    # ✅ Store locally using FAISS
-    vectorstore = FAISS.from_documents(chunks, embeddings)
+    vectorstore = FAISS.from_documents(
+        documents=chunks,
+        embedding=embeddings
+    )
+
+    print("✅ Vector store created successfully")
 
     return vectorstore

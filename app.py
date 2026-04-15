@@ -54,9 +54,14 @@ async def handle_upload(file: UploadFile = File(...)):
             f.write(contents)
 
         docs = load_pdf(temp_path)
+        print(f"📄 Document loaded with {len(docs)} pages")
+
         chunks = split_docs(docs)
 
-        # ✅ STORE IN FASTAPI STATE
+        # 🔥 EXTRA SAFETY LIMIT
+        if len(chunks) > 80:
+            chunks = chunks[:80]
+
         app.state.vector_store = embed_and_store(chunks)
 
         if os.path.exists(temp_path):
@@ -130,3 +135,6 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
 
     uvicorn.run("app:app", host="0.0.0.0", port=port)
+
+    
+
