@@ -13,7 +13,7 @@ function handleEnter(e) {
     if (e.key === 'Enter') sendQuery();
 }
 
-// SCROLL
+// AUTO SCROLL
 function scrollToBottom() {
     chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
 }
@@ -59,7 +59,7 @@ function newChat() {
     </div>`;
 }
 
-// 🔥 FIXED UPLOAD FUNCTION
+// 🔥 UPLOAD
 async function uploadDoc() {
     const fileInput = document.getElementById('pdfFile');
     const statusMsg = document.getElementById('uploadStatus');
@@ -84,11 +84,8 @@ async function uploadDoc() {
         const res = await fetch('/upload', { method: 'POST', body: formData });
         const data = await res.json();
 
-        console.log("UPLOAD RESPONSE:", data);
-
         progress.style.width = '100%';
 
-        // 🔥 MAIN FIX
         if (data.status === "Success") {
             statusMsg.textContent = '✅ Upload successful!';
             kbStatus.classList.remove('hidden');
@@ -99,7 +96,6 @@ async function uploadDoc() {
             }
 
         } else {
-            // 🔥 SHOW REAL ERROR FROM BACKEND
             statusMsg.textContent = '❌ ' + data.message;
             progress.style.width = '0%';
         }
@@ -114,12 +110,13 @@ async function uploadDoc() {
     setTimeout(() => { progress.style.width = '0%'; }, 2000);
 }
 
-// ASK
+// 🔥 ASK QUERY
 async function sendQuery() {
     const input = document.getElementById('userQuery');
     const query = input.value.trim();
     if (!query) return;
 
+    // USER MESSAGE
     chat.innerHTML += `
     <div class="message user-message">
         <div class="message-content">${escapeHtml(query)}</div>
@@ -127,6 +124,7 @@ async function sendQuery() {
 
     input.value = '';
 
+    // LOADER
     const loaderId = 'load-' + Date.now();
     chat.innerHTML += `
     <div class="message ai-message" id="${loaderId}">
@@ -143,20 +141,27 @@ async function sendQuery() {
         const res = await fetch('/ask', { method: 'POST', body: formData });
         const data = await res.json();
 
-        console.log("ASK RESPONSE:", data);
-
         document.getElementById(loaderId)?.remove();
 
         const formatted = marked.parse(data.answer || 'No response.');
 
+        // 🔥 NEW SOURCE UI (UPGRADED)
         let sourcesHtml = '';
+
         if (data.sources && data.sources.length > 0) {
-            const tags = data.sources
-                .map(s => `<span class="source-tag">📄 ${s}</span>`)
-                .join('');
-            sourcesHtml = `<div class="source-tags">${tags}</div>`;
+            const boxes = data.sources.map((s, i) => {
+                const preview = data.previews?.[i] || '';
+                return `
+                <div class="source-box">
+                    <div class="source-title">📄 ${s}</div>
+                    <div class="source-preview">${preview}</div>
+                </div>`;
+            }).join('');
+
+            sourcesHtml = `<div class="source-container">${boxes}</div>`;
         }
 
+        // AI MESSAGE
         chat.innerHTML += `
         <div class="message ai-message">
             <div class="avatar ai-avatar">AI</div>
