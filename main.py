@@ -1,18 +1,16 @@
 import os
-from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 
-load_dotenv()
+# ❗ Use environment variable directly (Render compatible)
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-# 🔥 FIX: ensure API key exists
+# 🔥 Ensure API key exists
 if not GROQ_API_KEY:
-    raise ValueError("❌ GROQ_API_KEY not set")
+    raise ValueError("❌ GROQ_API_KEY not set in environment variables")
 
 
 def get_qa_chain(vectorstore):
