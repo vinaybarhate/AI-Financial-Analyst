@@ -38,7 +38,6 @@ app.mount(
 
 @app.get("/")
 async def serve_ui():
-    # 🔥 FIX: absolute path for index.html
     return FileResponse(os.path.join(BASE_DIR, "index.html"))
 
 
@@ -82,30 +81,34 @@ async def handle_upload(file: UploadFile = File(...)):
         }
 
 
-# 🔥 ASK ROUTE
+# 🔥 ASK ROUTE (UPDATED UX)
 @app.post("/ask")
 async def ask_question(query: str = Form(...)):
 
     print("💬 Query:", query)
 
+    query_clean = query.lower().strip()
+
+    # ✅ 1. HANDLE GREETINGS FIRST
+    small_talk = ["hi", "hello", "hey", "good morning", "good evening"]
+
+    if any(word in query_clean for word in small_talk):
+        return {
+            "answer": "Hey 👋\n\nPlease upload a document first so I can analyze it and provide insights.",
+            "sources": []
+        }
+
+    # ✅ 2. CHECK VECTOR STORE
     if not hasattr(app.state, "vector_store"):
         print("❌ VECTOR STORE NOT FOUND")
         return {
-            "answer": "System Error: Knowledge base not initialized. Please upload a document first.",
+            "answer": "Please upload a document 📄 first to start analysis.",
             "sources": []
         }
 
     print("✅ VECTOR STORE EXISTS")
 
-    query_clean = query.lower().strip()
-    small_talk = ["hi", "hello", "hey", "good morning", "good evening"]
-
-    if any(word in query_clean for word in small_talk):
-        return {
-            "answer": "Hello! 👋 Upload a financial document to begin analysis.",
-            "sources": []
-        }
-
+    # ✅ 3. NORMAL RAG FLOW
     qa = get_qa_chain(app.state.vector_store)
 
     try:
@@ -125,16 +128,12 @@ async def ask_question(query: str = Form(...)):
     except Exception as e:
         print(f"❌ ASK ERROR: {e}")
         return {
-            "answer": "Technical error occurred.",
+            "answer": "I encountered a technical issue while processing your request.",
             "sources": []
         }
 
+
 # --- EXECUTION ---
 if __name__ == "__main__":
-    # 🔥 REQUIRED for Render
     port = int(os.environ.get("PORT", 8000))
-
     uvicorn.run("app:app", host="0.0.0.0", port=port)
-
-    
-
