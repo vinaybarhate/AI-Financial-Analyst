@@ -1,54 +1,53 @@
 const chat = document.getElementById('chatBox');
-let isTrained = false;
 let sidebarOpen = true;
 
-// ── FILE SELECT ──────────────────────────────────────────────
+// FILE SELECT
 document.getElementById('pdfFile').addEventListener('change', function () {
     const file = this.files[0];
     document.getElementById('fileName').textContent =
         file ? file.name : 'No file selected';
 });
 
-// ── ENTER KEY ────────────────────────────────────────────────
+// ENTER KEY
 function handleEnter(e) {
     if (e.key === 'Enter') sendQuery();
 }
 
-// ── SCROLL ───────────────────────────────────────────────────
+// SCROLL
 function scrollToBottom() {
     chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
 }
 
-// ── THEME TOGGLE ─────────────────────────────────────────────
+// THEME
 function toggleTheme() {
     document.body.classList.toggle('dark');
 }
 
-// ── SIDEBAR TOGGLE — FIXED ───────────────────────────────────
+// SIDEBAR
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
-    const btn     = document.getElementById('edgeBtn');
+    const btn = document.getElementById('edgeBtn');
 
     sidebarOpen = !sidebarOpen;
 
     if (sidebarOpen) {
         sidebar.classList.remove('collapsed');
-        btn.style.left    = 'var(--sidebar-w)';
-        btn.textContent   = '◀';
+        btn.style.left = 'var(--sidebar-w)';
+        btn.textContent = '◀';
     } else {
         sidebar.classList.add('collapsed');
-        btn.style.left    = '0px';
-        btn.textContent   = '▶';
+        btn.style.left = '0px';
+        btn.textContent = '▶';
     }
 }
 
-// ── QUICK QUERY ──────────────────────────────────────────────
+// QUICK QUERY
 function quickQuery(text) {
     document.getElementById('userQuery').value = text;
     sendQuery();
 }
 
-// ── NEW CHAT ─────────────────────────────────────────────────
+// NEW CHAT
 function newChat() {
     chat.innerHTML = `
     <div class="message ai-message">
@@ -60,13 +59,13 @@ function newChat() {
     </div>`;
 }
 
-// ── UPLOAD ───────────────────────────────────────────────────
+// UPLOAD
 async function uploadDoc() {
     const fileInput = document.getElementById('pdfFile');
     const statusMsg = document.getElementById('uploadStatus');
-    const btn       = document.getElementById('processBtn');
-    const progress  = document.getElementById('progressFill');
-    const kbStatus  = document.getElementById('kbStatus');
+    const btn = document.getElementById('processBtn');
+    const progress = document.getElementById('progressFill');
+    const kbStatus = document.getElementById('kbStatus');
     const docLoaded = document.getElementById('docLoaded');
 
     if (!fileInput.files[0]) {
@@ -82,24 +81,23 @@ async function uploadDoc() {
     progress.style.width = '40%';
 
     try {
-        const res  = await fetch('/upload', { method: 'POST', body: formData });
+        const res = await fetch('/upload', { method: 'POST', body: formData });
         const data = await res.json();
+
+        console.log("UPLOAD RESPONSE:", data);
 
         progress.style.width = '100%';
         statusMsg.textContent = data.message || '✅ Ready';
 
-        // show KB ready dot
         kbStatus.classList.remove('hidden');
 
-        // update header subtext
         if (docLoaded) {
             docLoaded.textContent =
                 (fileInput.files[0]?.name || 'Document') + ' loaded';
         }
 
-        isTrained = true;
-
     } catch (err) {
+        console.error(err);
         statusMsg.textContent = '❌ Upload failed';
         progress.style.width = '0%';
     }
@@ -108,19 +106,12 @@ async function uploadDoc() {
     setTimeout(() => { progress.style.width = '0%'; }, 2000);
 }
 
-// ── SEND / ASK ───────────────────────────────────────────────
+// ASK (FIXED)
 async function sendQuery() {
     const input = document.getElementById('userQuery');
     const query = input.value.trim();
     if (!query) return;
 
-    // warn if not trained
-    if (!isTrained) {
-        appendAI('⚠️ Please upload and train on a document first.');
-        return;
-    }
-
-    // user bubble
     chat.innerHTML += `
     <div class="message user-message">
         <div class="message-content">${escapeHtml(query)}</div>
@@ -128,7 +119,6 @@ async function sendQuery() {
 
     input.value = '';
 
-    // loading bubble
     const loaderId = 'load-' + Date.now();
     chat.innerHTML += `
     <div class="message ai-message" id="${loaderId}">
@@ -142,14 +132,15 @@ async function sendQuery() {
     formData.append('query', query);
 
     try {
-        const res  = await fetch('/ask', { method: 'POST', body: formData });
+        const res = await fetch('/ask', { method: 'POST', body: formData });
         const data = await res.json();
+
+        console.log("ASK RESPONSE:", data);
 
         document.getElementById(loaderId)?.remove();
 
         const formatted = marked.parse(data.answer || 'No response.');
 
-        // build source tags
         let sourcesHtml = '';
         if (data.sources && data.sources.length > 0) {
             const tags = data.sources
@@ -168,6 +159,7 @@ async function sendQuery() {
         </div>`;
 
     } catch (err) {
+        console.error(err);
         document.getElementById(loaderId)?.remove();
         appendAI('❌ Something went wrong. Please try again.');
     }
@@ -175,7 +167,7 @@ async function sendQuery() {
     scrollToBottom();
 }
 
-// ── HELPERS ──────────────────────────────────────────────────
+// HELPERS
 function appendAI(text) {
     chat.innerHTML += `
     <div class="message ai-message">
@@ -190,31 +182,4 @@ function escapeHtml(str) {
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
-}
-
-// ── DRAG & DROP ──────────────────────────────────────────────
-const dragArea = document.getElementById('dragArea');
-
-if (dragArea) {
-    dragArea.addEventListener('dragover', e => {
-        e.preventDefault();
-        dragArea.style.background = 'rgba(16,163,127,0.1)';
-        dragArea.style.borderColor = 'rgba(16,163,127,0.7)';
-    });
-
-    dragArea.addEventListener('dragleave', () => {
-        dragArea.style.background = '';
-        dragArea.style.borderColor = '';
-    });
-
-    dragArea.addEventListener('drop', e => {
-        e.preventDefault();
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            document.getElementById('pdfFile').files = files;
-            document.getElementById('fileName').textContent = files[0].name;
-        }
-        dragArea.style.background = '';
-        dragArea.style.borderColor = '';
-    });
 }

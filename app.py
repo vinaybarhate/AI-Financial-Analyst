@@ -83,24 +83,24 @@ async def ask_question(query: str = Form(...)):
 
     print("💬 Query:", query)
 
-    # ✅ Check if vector store exists
     if not hasattr(app.state, "vector_store"):
+        print("❌ VECTOR STORE NOT FOUND")
         return {
             "answer": "System Error: Knowledge base not initialized. Please upload a document first.",
             "sources": []
         }
 
-    # 🔥 Handle greetings / small talk
+    print("✅ VECTOR STORE EXISTS")
+
     query_clean = query.lower().strip()
     small_talk = ["hi", "hello", "hey", "good morning", "good evening"]
 
     if any(word in query_clean for word in small_talk):
         return {
-            "answer": "Hello! 👋 I’m your AI Financial Analyst.\n\n📄 Upload a financial document and ask questions to get insights.",
+            "answer": "Hello! 👋 Upload a financial document to begin analysis.",
             "sources": []
         }
 
-    # 🔥 NORMAL RAG FLOW
     qa = get_qa_chain(app.state.vector_store)
 
     try:
@@ -120,10 +120,9 @@ async def ask_question(query: str = Form(...)):
     except Exception as e:
         print(f"❌ ASK ERROR: {e}")
         return {
-            "answer": "I apologize, but I encountered a technical issue while processing your request.",
+            "answer": "Technical error occurred.",
             "sources": []
         }
-
 
 # --- EXECUTION ---
 if __name__ == "__main__":
