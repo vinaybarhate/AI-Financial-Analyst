@@ -21,53 +21,55 @@
                 <span class="brand-name">FinanceAI</span>
             </div>
 
-            <!-- Document section -->
+            <!-- Document Upload -->
             <p class="sidebar-label">Document</p>
 
-            <!-- Hidden file input — ID unchanged -->
             <input type="file" id="pdfFile" accept=".pdf" style="display:none;">
 
-            <!-- Drag zone — ID unchanged -->
             <div id="dragArea" class="drag-area"
                  onclick="document.getElementById('pdfFile').click()">
                 <span class="drag-plus">＋</span>
                 Drop PDF here<br>or click to upload
             </div>
 
-            <!-- File name — ID unchanged -->
             <div id="fileName" class="file-name">No file selected</div>
 
-            <!-- Train button — ID + onclick unchanged -->
             <button onclick="uploadDoc()" id="processBtn" class="primary-btn">
                 🚀 Train AI
             </button>
 
-            <!-- Status — ID unchanged -->
             <div id="uploadStatus" class="status-msg"></div>
 
-            <!-- Progress — ID unchanged -->
             <div class="progress-bar">
                 <div id="progressFill" class="progress-fill"></div>
             </div>
 
-            <!-- KB ready indicator -->
             <div class="kb-status hidden" id="kbStatus">
                 <span class="dot"></span> Knowledge base ready
             </div>
 
-            <hr class="sidebar-divider">
+            <!-- Loaded Documents List -->
+            <div id="docListSection" style="display:none;">
+                <hr class="sidebar-divider">
+                <p class="sidebar-label">Loaded Documents</p>
+                <div id="docList" class="doc-list"></div>
+            </div>
 
+            <hr class="sidebar-divider">
             <p class="options-label">Options</p>
 
-            <!-- Theme — onclick unchanged -->
             <button onclick="toggleTheme()" class="toggle-btn">
                 🌙 &nbsp;Toggle Theme
+            </button>
+
+            <button onclick="clearAll()" class="toggle-btn" style="margin-top:4px; color:#ef4444; border-color:rgba(239,68,68,0.2);">
+                🗑️ &nbsp;Clear All
             </button>
 
         </div>
     </aside>
 
-    <!-- Edge toggle — always visible -->
+    <!-- Edge toggle button -->
     <button id="edgeBtn" onclick="toggleSidebar()">◀</button>
 
     <!-- ══ MAIN CHAT ═════════════════════════════════════════ -->
@@ -83,30 +85,31 @@
                 <p class="doc-loaded" id="docLoaded">Upload a document to begin</p>
             </div>
             <div class="header-right">
-                <button class="new-chat-btn" onclick="newChat()">New chat</button>
+                <button class="new-chat-btn" onclick="newChat()">+ New chat</button>
             </div>
         </header>
 
-        <!-- Quick action chips -->
+        <!-- Quick chips -->
         <div class="quick-actions-bar">
-            <button class="chip" onclick="quickQuery('Summarize the document in 10 lines')">Summarize</button>
-            <button class="chip" onclick="quickQuery('What are the key financial metrics?')">Key metrics</button>
-            <button class="chip" onclick="quickQuery('What is the fiscal deficit?')">Fiscal deficit</button>
-            <button class="chip" onclick="quickQuery('What are the total receipts and expenditure?')">Budget overview</button>
+            <button class="chip" onclick="quickQuery('Summarize the document in 10 key points')">📋 Summarize</button>
+            <button class="chip" onclick="quickQuery('What are the key financial metrics and KPIs?')">📊 Key metrics</button>
+            <button class="chip" onclick="quickQuery('What is the fiscal deficit?')">📉 Fiscal deficit</button>
+            <button class="chip" onclick="quickQuery('What are the total receipts and total expenditure?')">💰 Budget overview</button>
         </div>
 
-        <!-- Chat messages — ID unchanged -->
+        <!-- Chat messages -->
         <div id="chatBox" class="chat-messages">
             <div class="message ai-message">
                 <div class="avatar ai-avatar">AI</div>
                 <div class="message-content">
-                    👋 Hello! I'm your AI Financial Analyst.<br>
-                    Upload a document and ask anything.
+                    👋 <strong>Hello! I'm your AI Financial Analyst.</strong><br><br>
+                    Upload one or more PDF documents and ask me anything about them.
+                    I'll analyze the content and give you structured financial insights.
                 </div>
             </div>
         </div>
 
-        <!-- Input bar — all IDs + handlers unchanged -->
+        <!-- Input bar -->
         <div class="input-container">
             <div class="input-wrapper">
                 <input
